@@ -30,15 +30,6 @@ class TwillFirewall
 
     protected TwillFirewallModel|null $current = null;
 
-    public function __construct()
-    {
-        //        $this->setConfigured();
-        //
-        //        $this->setEnabled();
-        //
-        //        $this->configureViews();
-    }
-
     public function config(string|null $key = null, mixed $default = null): mixed
     {
         $this->config ??= filled($this->config) ? $this->config : (array) config('twill-firewall');
@@ -58,14 +49,19 @@ class TwillFirewall
                 (!$this->hasDotEnv() || $this->readFromDatabase('published'));
     }
 
-    public function password(bool $force = false): string|null
+    public function allow(bool $force = false): string|null
     {
-        return $this->get('keys.password', 'password', $force);
+        return $this->get('keys.allow', 'allow', $force);
     }
 
-    public function username(bool $force = false): string|null
+    public function block(bool $force = false): string|null
     {
-        return $this->get('keys.username', 'username', $force);
+        return $this->get('keys.block', 'block', $force);
+    }
+
+    public function redirectTo(bool $force = false): string|null
+    {
+        return $this->get('keys.redirect_to', 'redirect_to', $force);
     }
 
     public function published(bool $force = false): string|null
@@ -89,11 +85,6 @@ class TwillFirewall
                 ->published()
                 ->orderBy('domain')
                 ->get();
-
-            $domains = $domains->filter(
-                fn($domain) => filled($domain->getAttributes()['username']) &&
-                    filled($domain->getAttributes()['password']),
-            );
 
             if ($domains->isEmpty()) {
                 return null;
@@ -121,13 +112,13 @@ class TwillFirewall
 
     public function hasDotEnv(): bool
     {
-        return filled($this->config('keys.username') ?? null) || filled($this->config('keys.password') ?? null);
+        return filled($this->config('keys.allow') ?? null) || filled($this->config('keys.block') ?? null);
     }
 
     protected function isConfigured(): bool
     {
         return $this->isConfigured ??
-            $this->hasDotEnv() || (filled($this->username(true)) && filled($this->password(true)));
+            $this->hasDotEnv() || (filled($this->allow(true)) && filled($this->block(true)));
     }
 
     protected function setConfigured(): void
@@ -172,7 +163,7 @@ class TwillFirewall
 
         $checkAuth = fn() => $this->checkAuth($request);
 
-        $rateLimitingKey = 'firewall:' . $this->readFromDatabase('username');
+        $rateLimitingKey = 'firewall:' . $this->readFromDatabase('allow');
 
         $response = RateLimiter::attempt(
             $rateLimitingKey,
@@ -213,8 +204,8 @@ class TwillFirewall
         }
 
         return Firewall::checkAuth($request, [
-            'username' => $this->username(),
-            'password' => $this->password(),
+            'allow' => $this->allow(),
+            'block' => $this->block(),
             'guards' => $this->getAuthGuards(),
             'routes' => $this->config('routes'),
         ]);

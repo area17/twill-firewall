@@ -13,9 +13,11 @@ class CreateTwillFirewallTables extends Migration
 
             $table->string('domain')->nullable();
 
-            $table->string('username')->nullable();
+            $table->text('allow')->nullable();
 
-            $table->string('password')->nullable();
+            $table->text('block')->nullable();
+
+            $table->string('redirect_to')->nullable();
 
             $table->boolean('allow_laravel_login')->default(false);
 

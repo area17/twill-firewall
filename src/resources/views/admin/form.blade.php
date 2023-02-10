@@ -6,20 +6,19 @@
 
 @section('contentFields')
     @formField('input', [
-    'type' => TwillFirewall::config('inputs.username.type'),
-    'name' => 'username',
+    'type' => TwillFirewall::config('inputs.allow.type'),
+    'name' => 'allow',
     'label' => 'Username',
     'required' => true,
     'disabled' => TwillFirewall::hasDotEnv(),
     ])
 
     @formField('input', [
-    'type' => TwillFirewall::config('inputs.password.type'),
-    'name' => 'password',
+    'type' => TwillFirewall::config('inputs.block.type'),
+    'name' => 'block',
     'label' => 'Password',
     'required' => true,
     'disabled' => TwillFirewall::hasDotEnv(),
-    'password' => true,
     ])
 
     @formField('checkbox', [

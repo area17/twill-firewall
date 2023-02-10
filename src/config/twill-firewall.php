@@ -1,20 +1,20 @@
 <?php
 
 return [
-    'enabled' => env('TWILL_HTTP_BASIC_AUTH_ENABLED', false),
+    'enabled' => env('TWILL_FIREWALL_ENABLED', false),
 
     'rate-limiting' => [
-        'attemps-per-minute' => env('TWILL_HTTP_BASIC_AUTH_RATE_LIMITING_ATTEMPTS', 500),
+        'attemps-per-minute' => env('TWILL_FIREWALL_RATE_LIMITING_ATTEMPTS', 500),
     ],
 
     'keys' => [
-        'username' => env('TWILL_HTTP_BASIC_AUTH_USERNAME'),
-        'password' => env('TWILL_HTTP_BASIC_AUTH_PASSWORD'),
+        'allow' => env('TWILL_FIREWALL_ALLOW'),
+        'block' => env('TWILL_FIREWALL_BLOCK'),
     ],
 
     'inputs' => [
-        'email' => ['type' => 'text'],
-        'password' => ['type' => 'password'],
+        'email' => ['type' => 'textarea'],
+        'password' => ['type' => 'textarea'],
     ],
 
     'middleware' => [
@@ -33,7 +33,7 @@ return [
 
     'database-login' => [
         'twill' => [
-            'enabled' => env('TWILL_HTTP_BASIC_AUTH_TWILL_DATABASE_LOGIN_ENABLED', false),
+            'enabled' => env('TWILL_FIREWALL_TWILL_DATABASE_LOGIN_ENABLED', false),
 
             'username-column' => 'email',
 
@@ -41,7 +41,7 @@ return [
         ],
 
         'laravel' => [
-            'enabled' => env('TWILL_HTTP_BASIC_AUTH_LARAVEL_DATABASE_LOGIN_ENABLED', false),
+            'enabled' => env('TWILL_FIREWALL_LARAVEL_DATABASE_LOGIN_ENABLED', false),
 
             'username-column' => 'email',
 
