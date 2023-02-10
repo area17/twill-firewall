@@ -5,7 +5,8 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">=8.0",
-    "area17/twill": "^2.7|^3.0"
+    "area17/twill": "^2.7|^3.0",
+    "pragmarx/firewall": "^2.3"
   },
   "require-dev": {
       "nunomaduro/larastan": "^2.0",
@@ -13,12 +14,6 @@
       "orchestra/testbench": "^7.11",
       "friendsofphp/php-cs-fixer": "^3.0"
   },
-  "repositories": [
-      {
-          "type": "vcs",
-          "url": "https://github.com/area17/firewall"
-      }
-  ],
   "autoload": {
     "psr-4": {
       "A17\\TwillFirewall\\": "src"
