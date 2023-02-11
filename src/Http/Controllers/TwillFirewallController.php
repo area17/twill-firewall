@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use A17\Twill\Http\Controllers\Admin\ModuleController;
 use A17\TwillFirewall\Models\TwillFirewall;
+use A17\Twill\Http\Controllers\Admin\ModuleController;
 use A17\TwillFirewall\Repositories\TwillFirewallRepository;
 use A17\TwillFirewall\Support\Facades\TwillFirewall as TwillFirewallFacade;
 
@@ -57,7 +57,7 @@ class TwillFirewallController extends ModuleController
      */
     public function index($parentModuleId = null)
     {
-        $this->generateDomains();
+        app(TwillFirewallRepository::class)->generateDomains();
 
         $this->setIndexOptions();
 
@@ -67,39 +67,6 @@ class TwillFirewallController extends ModuleController
     protected function getViewPrefix(): string|null
     {
         return 'twill-firewall::admin';
-    }
-
-    public function generateDomains(): void
-    {
-        if (DB::table('twill_firewall')->count() !== 0) {
-            return;
-        }
-
-        $appDomain = TwillFirewallFacade::getDomain(config('app.url'));
-
-        $currentDomain = TwillFirewallFacade::getDomain(URL::current());
-
-        /** @phpstan-ignore-next-line  */
-        app(TwillFirewallRepository::class)->create([
-            'domain' => '*',
-            'published' => false,
-        ]);
-
-        if (filled($currentDomain)) {
-            /** @phpstan-ignore-next-line  */
-            app(TwillFirewallRepository::class)->create([
-                'domain' => $currentDomain,
-                'published' => false,
-            ]);
-        }
-
-        if (filled($appDomain) && $appDomain !== $currentDomain) {
-            /** @phpstan-ignore-next-line  */
-            app(TwillFirewallRepository::class)->create([
-                'domain' => $appDomain,
-                'published' => false,
-            ]);
-        }
     }
 
     public function setIndexOptions(): void

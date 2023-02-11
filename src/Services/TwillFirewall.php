@@ -1,22 +1,19 @@
 <?php
 
-namespace A17\TwillFirewall\Support;
+namespace A17\TwillFirewall\Services;
 
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
-use A17\Firewall\Middleware;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
-use A17\Firewall\Firewall;
-use Illuminate\Support\Facades\RateLimiter;
-use A17\TwillFirewall\Models\Behaviors\Encrypt;
+use A17\TwillFirewall\Services\Middleware;
 use A17\TwillFirewall\Repositories\TwillFirewallRepository;
 use A17\TwillFirewall\Models\TwillFirewall as TwillFirewallModel;
 
 class TwillFirewall
 {
-    use Encrypt;
+    use Middleware;
 
     public const DEFAULT_ERROR_MESSAGE = 'Invisible captcha failed.';
 
@@ -43,7 +40,11 @@ class TwillFirewall
 
     public function enabled(): bool
     {
-        return $this->enabled ??
+        if (filled($this->enabled)) {
+            return $this->enabled;
+        }
+
+        return $this->enabled =
             ($this->hasDotEnv() ? $this->config('enabled') : true) &&
                 $this->isConfigured() &&
                 (!$this->hasDotEnv() || $this->readFromDatabase('published'));
@@ -62,6 +63,11 @@ class TwillFirewall
     public function redirectTo(bool $force = false): string|null
     {
         return $this->get('keys.redirect_to', 'redirect_to', $force);
+    }
+
+    public function strategy(bool $force = false): string|null
+    {
+        return $this->get('keys.strategy', 'strategy', $force);
     }
 
     public function published(bool $force = false): string|null
@@ -107,7 +113,7 @@ class TwillFirewall
             return null;
         }
 
-        return $this->decrypt($this->current->getAttributes()[$key]);
+        return $this->current->getAttributes()[$key];
     }
 
     public function hasDotEnv(): bool
@@ -115,10 +121,19 @@ class TwillFirewall
         return filled($this->config('keys.allow') ?? null) || filled($this->config('keys.block') ?? null);
     }
 
-    protected function isConfigured(): bool
+    public function isConfigured(): bool
     {
-        return $this->isConfigured ??
-            $this->hasDotEnv() || (filled($this->allow(true)) && filled($this->block(true)));
+        if (filled($this->isConfigured)) {
+            return $this->isConfigured;
+        }
+
+        if ($this->hasDotEnv()) {
+            return true;
+        }
+
+        return $this->isConfigured =
+                ($this->isAllowStrategy() && filled($this->allow(true))) ||
+                ($this->isBlockStrategy() && filled($this->block(true)));
     }
 
     protected function setConfigured(): void
@@ -155,70 +170,13 @@ class TwillFirewall
         return $this->hasDotEnv() || $this->readFromDatabase('domain') === '*';
     }
 
-    public function middleware(Request $request): mixed
+    public function isBlockStrategy()
     {
-        if (!$this->enabled()) {
-            return null;
-        }
-
-        $checkAuth = fn() => $this->checkAuth($request);
-
-        $rateLimitingKey = 'firewall:' . $this->readFromDatabase('allow');
-
-        $response = RateLimiter::attempt(
-            $rateLimitingKey,
-            $perMinute = $this->config('rate-limiting.attemps-per-minute', 5),
-            $checkAuth,
-        );
-
-        if (RateLimiter::tooManyAttempts($rateLimitingKey, $perMinute)) {
-            abort(429, 'Too many attempts. Please wait one minute and try again.');
-        }
-
-        if ($response === null) {
-            RateLimiter::clear($rateLimitingKey);
-        }
-
-        return $response === true ? null : $response;
+        return $this->strategy(true) === 'block';
     }
 
-    public function getAuthGuards(): array
+    public function isAllowStrategy()
     {
-        $guards = [];
-
-        foreach ($this->config('database-login', []) as $name => $guard) {
-            $enabled = $this->hasDotEnv() ? $guard['enabled'] ?? false : $this->readFromDatabase("allow_{$name}_login");
-
-            if ($enabled) {
-                $guards[] = $guard['guard'];
-            }
-        }
-
-        return $guards;
-    }
-
-    public function checkAuth(Request $request): mixed
-    {
-        if ($this->loggedInWithAuthGuard()) {
-            return true;
-        }
-
-        return Firewall::checkAuth($request, [
-            'allow' => $this->allow(),
-            'block' => $this->block(),
-            'guards' => $this->getAuthGuards(),
-            'routes' => $this->config('routes'),
-        ]);
-    }
-
-    public function loggedInWithAuthGuard(): bool
-    {
-        foreach ($this->getAuthGuards() as $guard) {
-            if (auth($guard)->check()) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->strategy(true) === 'allow';
     }
 }

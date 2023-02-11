@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Crypt;
 use A17\Twill\Models\Behaviors\HasRevisions;
 use A17\TwillFirewall\Services\Helpers;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use A17\TwillFirewall\Models\Behaviors\Encrypt;
 use A17\TwillFirewall\Support\Facades\TwillFirewall as TwillFirewallFacade;
 
 /**
@@ -17,11 +16,10 @@ use A17\TwillFirewall\Support\Facades\TwillFirewall as TwillFirewallFacade;
 class TwillFirewall extends Model
 {
     use HasRevisions;
-    use Encrypt;
 
     protected $table = 'twill_firewall';
 
-    protected $fillable = ['published', 'domain', 'allow', 'block', 'redirect_to', 'allow_laravel_login', 'allow_twill_login'];
+    protected $fillable = ['published', 'domain', 'allow', 'block', 'redirect_to', 'allow_laravel_login', 'allow_twill_login', 'strategy'];
 
     protected $appends = ['domain_string', 'status', 'from_dot_env'];
 
@@ -32,7 +30,9 @@ class TwillFirewall extends Model
 
     public function getConfiguredAttribute(): bool
     {
-        return filled($this->allow) || filled($this->block);
+        return TwillFirewallFacade::hasDotEnv() ||
+                $this->strategy === 'allow' && filled($this->allow) ||
+                $this->strategy === 'block' && filled($this->block);
     }
 
     public function getStatusAttribute(): string
@@ -51,5 +51,16 @@ class TwillFirewall extends Model
     public function getFromDotEnvAttribute(): string
     {
         return TwillFirewallFacade::hasDotEnv() ? 'yes' : 'no';
+    }
+
+    public function getDomainStringAttribute(): string|null
+    {
+        $domain = $this->domain;
+
+        if ($domain === '*') {
+            return '* (all domains)';
+        }
+
+        return $domain;
     }
 }

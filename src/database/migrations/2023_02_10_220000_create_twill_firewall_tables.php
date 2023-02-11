@@ -17,6 +17,8 @@ class CreateTwillFirewallTables extends Migration
 
             $table->text('block')->nullable();
 
+            $table->string('strategy')->default('allow');
+
             $table->string('redirect_to')->nullable();
 
             $table->boolean('allow_laravel_login')->default(false);

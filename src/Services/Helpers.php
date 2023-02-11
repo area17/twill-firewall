@@ -2,7 +2,7 @@
 
 namespace A17\TwillFirewall\Services;
 
-use A17\TwillFirewall\Support\TwillFirewall;
+use A17\TwillFirewall\Services\TwillFirewall;
 
 class Helpers
 {

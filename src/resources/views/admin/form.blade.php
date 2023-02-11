@@ -5,54 +5,73 @@
 @endphp
 
 @section('contentFields')
-    @formField('input', [
-    'type' => TwillFirewall::config('inputs.allow.type'),
-    'name' => 'allow',
-    'label' => 'Username',
-    'required' => true,
-    'disabled' => TwillFirewall::hasDotEnv(),
-    ])
-
-    @formField('input', [
-    'type' => TwillFirewall::config('inputs.block.type'),
-    'name' => 'block',
-    'label' => 'Password',
-    'required' => true,
-    'disabled' => TwillFirewall::hasDotEnv(),
-    ])
-
-    @formField('checkbox', [
-    'name' => 'allow_laravel_login',
-
-    'label' => 'Allow Laravel users to login',
-
-    'disabled' => TwillFirewall::hasDotEnv(),
-    ])
-
-    @formField('checkbox', [
-    'name' => 'allow_twill_login',
-
-    'label' => "Allow Twill users to login",
-
-    'disabled' => TwillFirewall::hasDotEnv(),
-    ])
-@stop
-
-@section('fieldsets')
-    <a17-fieldset title="Block editor" id="block-editor" :open="true">
-        @formField('block_editor', [
-            'blocks' => [
-                'notes',
+    @formField('radios', [
+        'name' => 'strategy',
+        'label' => 'Strategy',
+        'default' => 'allow',
+        'options' => [
+            [
+                'value' => 'allow',
+                'label' => 'Allow'
+            ],
+            [
+                'value' => 'block',
+                'label' => 'Block'
             ]
-        ])
-    </a17-fieldset>
+        ]
+    ])
 
-    <a17-fieldset title="Temporary access" id="temporary-access" :open="false">
-        @formField('checkbox', [
-            'name' => 'temporary_access_enabled',
-            'label' => 'Enabled',
+    @component('twill::partials.form.utils._connected_fields', [
+        'fieldName' => 'strategy',
+        'fieldValues' => 'allow',
+    ])
+        @formField('input', [
+            'type' => TwillFirewall::config('inputs.allow.type'),
+            'rows' => TwillFirewall::config('inputs.allow.rows'),
+            'name' => 'allow',
+            'label' => 'Allow only this address list',
+            'required' => false,
+            'disabled' => TwillFirewall::hasDotEnv(),
+            'note' => 'One per line, IP or CIDR, IPv4 and IPv6',
         ])
+    @endcomponent
 
-        @formField('repeater', ['type' => 'temporary-access'])
-    </a17-fieldset>
+    @component('twill::partials.form.utils._connected_fields', [
+        'fieldName' => 'strategy',
+        'fieldValues' => 'block',
+    ])
+        @formField('input', [
+            'type' => TwillFirewall::config('inputs.block.type'),
+            'rows' => TwillFirewall::config('inputs.allow.rows'),
+            'name' => 'block',
+            'label' => 'Block all this address list',
+            'required' => false,
+            'disabled' => TwillFirewall::hasDotEnv(),
+            'note' => 'One per line, IP or CIDR, IPv4 and IPv6',
+        ])
+    @endcomponent
+
+    @formField('input', [
+        'name' => 'redirect_to',
+        'label' => 'Redirect to this URL instead of blocking',
+        'required' => false,
+        'disabled' => TwillFirewall::hasDotEnv(),
+        'note' => 'Start with / for internal addresses',
+    ])
+
+    @formField('checkbox', [
+        'name' => 'allow_laravel_login',
+
+        'label' => 'Logged in Laravel users can pass the firewall',
+
+        'disabled' => TwillFirewall::hasDotEnv(),
+    ])
+
+    @formField('checkbox', [
+        'name' => 'allow_twill_login',
+
+        'label' => 'Logged in Twill users can pass the firewall',
+
+        'disabled' => TwillFirewall::hasDotEnv(),
+    ])
 @stop
