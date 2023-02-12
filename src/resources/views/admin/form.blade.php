@@ -12,13 +12,13 @@
         'options' => [
             [
                 'value' => 'allow',
-                'label' => 'Allow'
+                'label' => 'Allow',
             ],
             [
                 'value' => 'block',
-                'label' => 'Block'
-            ]
-        ]
+                'label' => 'Block',
+            ],
+        ],
     ])
 
     @component('twill::partials.form.utils._connected_fields', [
@@ -52,9 +52,9 @@
 
         @formField('checkbox', [
             'name' => 'block_attacks',
-
+        
             'label' => 'Block attacks',
-
+        
             'disabled' => TwillFirewall::hasDotEnv(),
         ])
 
@@ -64,9 +64,9 @@
         ])
             @formField('checkbox', [
                 'name' => 'add_blocked_to_list',
-
+            
                 'label' => 'Automatically add blocked IP addresses to block list',
-
+            
                 'disabled' => TwillFirewall::hasDotEnv(),
             ])
 
@@ -91,18 +91,18 @@
         @slot('left')
             @formField('checkbox', [
                 'name' => 'allow_laravel_login',
-
+            
                 'label' => 'Logged in Laravel users can pass the firewall',
-
+            
                 'disabled' => TwillFirewall::hasDotEnv(),
             ])
         @endslot
         @slot('right')
             @formField('checkbox', [
                 'name' => 'allow_twill_login',
-
+            
                 'label' => 'Logged in Twill users can pass the firewall',
-
+            
                 'disabled' => TwillFirewall::hasDotEnv(),
             ])
         @endslot
