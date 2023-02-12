@@ -13,7 +13,6 @@
             "sh tools/linters.sh prettify"
         ]
     },
-    "dependencies": {},
     "devDependencies": {
         "@prettier/plugin-php": "~0.18.9",
         "@shufo/prettier-plugin-blade": "~1.5.4",

@@ -14,9 +14,7 @@ trait IpUtils
             return $this->ipAddress;
         }
 
-        $this->ipAddress =
-            $this->getAkamaiIpAddress() ??
-            $this->getForwardedIpaddress();
+        $this->ipAddress = $this->getAkamaiIpAddress() ?? $this->getForwardedIpaddress();
 
         if (!$this->isIPv6($this->ipAddress)) {
             $this->ipAddress = $this->removePortFromIPv4($this->ipAddress);

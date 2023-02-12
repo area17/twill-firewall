@@ -48,8 +48,8 @@ class TwillFirewall
 
         return $this->enabled =
             ($this->hasDotEnv() ? $this->config('enabled') : true) &&
-                $this->isConfigured() &&
-                (!$this->hasDotEnv() || $this->readFromDatabase('published'));
+            $this->isConfigured() &&
+            (!$this->hasDotEnv() || $this->readFromDatabase('published'));
     }
 
     public function allow(bool $force = false): string|null
@@ -163,8 +163,8 @@ class TwillFirewall
         }
 
         return $this->isConfigured =
-                ($this->isAllowStrategy() && filled($this->allow(true))) ||
-                ($this->isBlockStrategy() && filled($this->block(true)));
+            ($this->isAllowStrategy() && filled($this->allow(true))) ||
+            ($this->isBlockStrategy() && filled($this->block(true)));
     }
 
     protected function setConfigured(): void

@@ -19,7 +19,19 @@ class TwillFirewall extends Model
 
     protected $table = 'twill_firewall';
 
-    protected $fillable = ['published', 'domain', 'allow', 'block', 'redirect_to', 'allow_laravel_login', 'allow_twill_login', 'strategy', 'block_attacks', 'add_blocked_to_list', 'max_requests_per_minute'];
+    protected $fillable = [
+        'published',
+        'domain',
+        'allow',
+        'block',
+        'redirect_to',
+        'allow_laravel_login',
+        'allow_twill_login',
+        'strategy',
+        'block_attacks',
+        'add_blocked_to_list',
+        'max_requests_per_minute',
+    ];
 
     protected $appends = ['domain_string', 'status', 'from_dot_env'];
 
@@ -31,8 +43,8 @@ class TwillFirewall extends Model
     public function getConfiguredAttribute(): bool
     {
         return TwillFirewallFacade::hasDotEnv() ||
-                $this->strategy === 'allow' && filled($this->allow) ||
-                $this->strategy === 'block' && filled($this->block);
+            ($this->strategy === 'allow' && filled($this->allow)) ||
+            ($this->strategy === 'block' && filled($this->block));
     }
 
     public function getStatusAttribute(): string

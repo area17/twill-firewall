@@ -132,7 +132,7 @@ trait Middleware
 
     public function makeBlockResponse(): Response|RedirectResponse
     {
-        $responseConfig = $this->config('responses.'.$this->strategy());
+        $responseConfig = $this->config('responses.' . $this->strategy());
 
         if (filled($redirectTo = $this->redirectTo())) {
             $responseConfig['redirect_to'] = $redirectTo;

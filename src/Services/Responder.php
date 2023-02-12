@@ -21,10 +21,7 @@ class Responder
         }
 
         if ($data['should_abort']) {
-            abort(
-                $data['code'],
-                $data['message']
-            );
+            abort($data['code'], $data['message']);
         }
 
         if ($page = $data['redirect_to']) {
@@ -35,9 +32,6 @@ class Responder
             return Response::view($view, $data);
         }
 
-        return Response::make(
-            $data['message'],
-            $data['code']
-        );
+        return Response::make($data['message'], $data['code']);
     }
 }
