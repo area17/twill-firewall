@@ -17,13 +17,15 @@ class ServiceProvider extends TwillPackageServiceProvider
 
     public function boot(): void
     {
-        $this->registerThisCapsule();
+        if (!$this->registerConfig()) {
+            return;
+        }
 
         $this->registerViews();
 
-        $this->registerConfig();
-
         $this->configureMiddeleware();
+
+        $this->registerThisCapsule();
 
         parent::boot();
     }
@@ -46,7 +48,7 @@ class ServiceProvider extends TwillPackageServiceProvider
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'twill-firewall');
     }
 
-    public function registerConfig(): void
+    public function registerConfig(): bool
     {
         $package = 'twill-firewall';
 
@@ -57,6 +59,8 @@ class ServiceProvider extends TwillPackageServiceProvider
         $this->publishes([
             $path => config_path("{$package}.php"),
         ]);
+
+        return config('twill-firewall.enabled');
     }
 
     public function configureMiddeleware(): void
@@ -68,8 +72,12 @@ class ServiceProvider extends TwillPackageServiceProvider
              */
             $kernel = $this->app[Kernel::class];
 
+            $method = config('twill-firewall.middleware.method');
+
+            $method = $method === 'append' ? 'appendMiddlewareToGroup' : 'prependMiddlewareToGroup';
+
             foreach (config('twill-firewall.middleware.groups', []) as $group) {
-                $kernel->appendMiddlewareToGroup($group, config('twill-firewall.middleware.class'));
+                $kernel->$method($group, config('twill-firewall.middleware.class'));
             }
         }
     }

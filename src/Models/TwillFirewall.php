@@ -19,7 +19,7 @@ class TwillFirewall extends Model
 
     protected $table = 'twill_firewall';
 
-    protected $fillable = ['published', 'domain', 'allow', 'block', 'redirect_to', 'allow_laravel_login', 'allow_twill_login', 'strategy'];
+    protected $fillable = ['published', 'domain', 'allow', 'block', 'redirect_to', 'allow_laravel_login', 'allow_twill_login', 'strategy', 'block_attacks', 'add_blocked_to_list', 'max_requests_per_minute'];
 
     protected $appends = ['domain_string', 'status', 'from_dot_env'];
 
@@ -62,5 +62,12 @@ class TwillFirewall extends Model
         }
 
         return $domain;
+    }
+
+    public function save(array $options = [])
+    {
+        TwillFirewallFacade::flushCache();
+
+        return parent::save($options);
     }
 }

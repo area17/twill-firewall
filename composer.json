@@ -5,8 +5,7 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">=8.0",
-    "area17/twill": "^2.7|^3.0",
-    "pragmarx/firewall": "^2.3"
+    "area17/twill": "^2.7|^3.0"
   },
   "require-dev": {
       "nunomaduro/larastan": "^2.0",

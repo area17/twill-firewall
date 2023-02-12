@@ -3,10 +3,6 @@
 return [
     'enabled' => env('TWILL_FIREWALL_ENABLED', false),
 
-    'rate-limiting' => [
-        'attemps-per-minute' => env('TWILL_FIREWALL_RATE_LIMITING_ATTEMPTS', 500),
-    ],
-
     'keys' => [
         'allow' => env('TWILL_FIREWALL_ALLOW'),
         'block' => env('TWILL_FIREWALL_BLOCK'),
@@ -25,7 +21,9 @@ return [
     ],
 
     'middleware' => [
-        'automatic' => true,
+        'automatic' => true, // Do it yourself to optimize the middleware stack for speed
+
+        'method' => 'append', // 'prepend' (faster if you don't need session login) or 'append'
 
         'groups' => ['web'],
 
@@ -38,6 +36,11 @@ return [
         ],
     ],
 
+    /**
+     * Database login
+     *
+     * This feature is intended will prevent logged in users from being blocked by the firewall or detected as attacks.
+     */
     'database-login' => [
         'twill' => [
             'enabled' => env('TWILL_FIREWALL_TWILL_DATABASE_LOGIN_ENABLED', false),
@@ -54,5 +57,43 @@ return [
 
             'guard' => 'web',
         ],
+    ],
+
+    'attacks' => [
+        'block' => env('TWILL_BLOCK_ATTACKS_ENABLED', false),
+        'add_blocked_to_list' => env('TWILL_ADD_BLOCKED_TO_BLOCK_LIST', false),
+        'max-per-minute' => env('TWILL_BLOCK_ATTACKS_RATE_PER_MIUTE', 30),
+    ],
+
+    'responses' => [
+        'allow' => [
+            'code' => 403, // 200 = log && notify, but keep pages rendering
+
+            'message' => null,
+
+            'view' => null,
+
+            'redirect_to' => null,
+
+            'should_abort' => false, // return abort() instead of Response::make() - disabled by default
+        ],
+
+        'block' => [
+            'code' => 403, // 200 = log && notify, but keep pages rendering
+
+            'message' => null,
+
+            'view' => null,
+
+            'redirect_to' => null,
+
+            'should_abort' => false, // return abort() instead of Response::make() - disabled by default
+        ],
+    ],
+
+    'cache' => [
+        'enabled' => env('TWILL_FIREWALL_CACHE_ENABLED', true),
+
+        'ttl' => env('TWILL_FIREWALL_CACHE_TTL', 60 * 60 * 24), // 24 hours
     ],
 ];

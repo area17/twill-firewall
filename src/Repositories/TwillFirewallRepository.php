@@ -29,7 +29,7 @@ class TwillFirewallRepository extends ModuleRepository
 
         $appDomain = TwillFirewallFacade::getDomain(config('app.url'));
 
-        $currentDomain = TwillFirewallFacade::getDomain(URL::current());
+        $currentDomain = TwillFirewallFacade::getDomain();
 
         /** @phpstan-ignore-next-line  */
         app(TwillFirewallRepository::class)->create([

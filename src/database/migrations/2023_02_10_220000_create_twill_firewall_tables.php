@@ -21,6 +21,12 @@ class CreateTwillFirewallTables extends Migration
 
             $table->string('redirect_to')->nullable();
 
+            $table->boolean('block_attacks')->default(false);
+
+            $table->boolean('add_blocked_to_list')->default(false);
+
+            $table->integer('max_requests_per_minute')->default(30);
+
             $table->boolean('allow_laravel_login')->default(false);
 
             $table->boolean('allow_twill_login')->default(false);

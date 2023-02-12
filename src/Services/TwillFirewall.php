@@ -8,12 +8,14 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
 use A17\TwillFirewall\Services\Middleware;
+use Illuminate\Support\Str;
+use PragmaRX\Firewall\Vendor\Laravel\Facade as Firewall;
 use A17\TwillFirewall\Repositories\TwillFirewallRepository;
 use A17\TwillFirewall\Models\TwillFirewall as TwillFirewallModel;
 
 class TwillFirewall
 {
-    use Middleware;
+    use Middleware, Cache;
 
     public const DEFAULT_ERROR_MESSAGE = 'Invisible captcha failed.';
 
@@ -70,6 +72,16 @@ class TwillFirewall
         return $this->get('keys.strategy', 'strategy', $force);
     }
 
+    public function blockAttacks(bool $force = false): string|null
+    {
+        return $this->get('attacks.block', 'block_attacks', $force);
+    }
+
+    public function addBlockedToBlockList(bool $force = false): string|null
+    {
+        return $this->get('attacks.add_blocked_to_list', 'add_blocked_to_list', $force);
+    }
+
     public function published(bool $force = false): string|null
     {
         return $this->get('enabled', 'published', $force);
@@ -86,6 +98,25 @@ class TwillFirewall
 
     protected function readFromDatabase(string $key): string|bool|null
     {
+        $domain = $this->getCurrent();
+
+        if (blank($domain)) {
+            return null;
+        }
+
+        return $domain->getAttributes()[$key];
+    }
+
+    public function getCurrent()
+    {
+        if (filled($this->current)) {
+            return $this->current;
+        }
+
+        if (blank($this->current)) {
+            $this->current = $this->cacheGet('current-domain');
+        }
+
         if (blank($this->current)) {
             $domains = app(TwillFirewallRepository::class)
                 ->published()
@@ -107,13 +138,13 @@ class TwillFirewall
 
                 $this->current = $domain;
             }
+
+            $this->cachePut('current-domain', $this->current);
         }
 
         if ($this->current === null) {
             return null;
         }
-
-        return $this->current->getAttributes()[$key];
     }
 
     public function hasDotEnv(): bool
