@@ -6,9 +6,9 @@ use Illuminate\Support\Str;
 
 trait IpUtils
 {
-    protected $ipAddress = null;
+    protected string|null $ipAddress = null;
 
-    public function getIpAddress()
+    public function getIpAddress(): string|null
     {
         if ($this->ipAddress !== null) {
             return $this->ipAddress;
@@ -16,27 +16,32 @@ trait IpUtils
 
         $this->ipAddress = $this->getAkamaiIpAddress() ?? $this->getForwardedIpaddress();
 
-        if (!$this->isIPv6($this->ipAddress)) {
+        if ($this->ipAddress !== null && !$this->isIPv6($this->ipAddress)) {
             $this->ipAddress = $this->removePortFromIPv4($this->ipAddress);
         }
 
-        if (filled($this->ipAddress)) {
+        if ($this->ipAddress !== null) {
             return $this->ipAddress;
         }
 
-        if (filled($this->ipAddress = request()->ip())) {
+        $this->ipAddress = request()->ip();
+
+        if ($this->ipAddress !== null) {
             return $this->ipAddress;
         }
 
+        /**
+         * TODO: is there a way to ensure we will always have an IP here?
+         */
         return $this->ipAddress = request()->getClientIp();
     }
 
-    protected function isIPv6($ipAddress)
+    protected function isIPv6(string $ipAddress): bool
     {
-        return filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
+        return filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
     }
 
-    public function removePortFromIPv4(array|string|null $ipAddress): string
+    public function removePortFromIPv4(string $ipAddress): string
     {
         return Str::before($ipAddress, ':');
     }
@@ -48,6 +53,6 @@ trait IpUtils
 
     public function getForwardedIpaddress(): ?string
     {
-        return explode(',', request()->header('X-Forwarded-For'))[0] ?? null;
+        return explode(',', (string) request()->header('X-Forwarded-For'))[0] ?? null;
     }
 }

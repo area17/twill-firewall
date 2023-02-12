@@ -13,10 +13,10 @@ class Helpers
 
     public static function instance(): TwillFirewall
     {
-        if (!app()->bound('firewall')) {
-            app()->singleton('firewall', fn() => new TwillFirewall());
+        if (!app()->bound(TwillFirewall::class)) {
+            app()->singleton(TwillFirewall::class, fn() => new TwillFirewall());
         }
 
-        return app('firewall');
+        return app(TwillFirewall::class);
     }
 }

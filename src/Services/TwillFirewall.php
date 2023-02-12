@@ -15,7 +15,8 @@ use A17\TwillFirewall\Models\TwillFirewall as TwillFirewallModel;
 
 class TwillFirewall
 {
-    use Middleware, Cache;
+    use Middleware;
+    use Cache;
 
     public const DEFAULT_ERROR_MESSAGE = 'Invisible captcha failed.';
 
@@ -43,7 +44,7 @@ class TwillFirewall
     public function enabled(): bool
     {
         if (filled($this->enabled)) {
-            return $this->enabled;
+            return !!$this->enabled;
         }
 
         return $this->enabled =
@@ -100,14 +101,14 @@ class TwillFirewall
     {
         $domain = $this->getCurrent();
 
-        if (blank($domain)) {
+        if ($domain === null) {
             return null;
         }
 
         return $domain->getAttributes()[$key];
     }
 
-    public function getCurrent()
+    public function getCurrent(): TwillFirewallModel|null
     {
         if (filled($this->current)) {
             return $this->current;
@@ -142,9 +143,7 @@ class TwillFirewall
             $this->cachePut('current-domain', $this->current);
         }
 
-        if ($this->current === null) {
-            return null;
-        }
+        return $this->current;
     }
 
     public function hasDotEnv(): bool
@@ -155,7 +154,7 @@ class TwillFirewall
     public function isConfigured(): bool
     {
         if (filled($this->isConfigured)) {
-            return $this->isConfigured;
+            return !!$this->isConfigured;
         }
 
         if ($this->hasDotEnv()) {
@@ -201,12 +200,12 @@ class TwillFirewall
         return $this->hasDotEnv() || $this->readFromDatabase('domain') === '*';
     }
 
-    public function isBlockStrategy()
+    public function isBlockStrategy(): bool
     {
         return $this->strategy(true) === 'block';
     }
 
-    public function isAllowStrategy()
+    public function isAllowStrategy(): bool
     {
         return $this->strategy(true) === 'allow';
     }

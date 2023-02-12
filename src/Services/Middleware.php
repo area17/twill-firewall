@@ -35,7 +35,7 @@ trait Middleware
         ]);
 
         if ($response === 'allow') {
-            $response = $this->blockAttackAttemps($response);
+            $response = $this->blockAttackAttemps();
         }
 
         if ($response === false || $response === 'block') {
@@ -71,17 +71,14 @@ trait Middleware
         return $guards;
     }
 
-    /**
-     * @return string
-     */
     public function rateLimitingKey(): string
     {
         return 'firewall:' . $this->getIpAddress();
     }
 
-    public function shouldAllowRequest(Request $request, array $config)
+    public function shouldAllowRequest(Request $request, array $config): string|bool
     {
-        if ($this->routeShouldBeIgnored($request, $config)) {
+        if ($this->routeShouldBeIgnored($request)) {
             return 'allow';
         }
 
@@ -111,23 +108,29 @@ trait Middleware
         return false;
     }
 
-    public function isMissingFromAllowList(array|string $ipAddresses)
+    public function isMissingFromAllowList(array|string $ipAddresses): bool
     {
         return !$this->isPresentOnList($ipAddresses);
     }
 
-    public function isPresentOnBlockList(array|string $ipAddresses)
+    public function isPresentOnBlockList(array|string $ipAddresses): bool
     {
         return $this->isPresentOnList($ipAddresses);
     }
 
-    public function isPresentOnList(array|string $ipAddresses)
+    public function isPresentOnList(array|string $ipAddresses): bool
     {
         if (is_string($ipAddresses)) {
             $ipAddresses = explode("\n", $ipAddresses);
         }
 
-        return SymphonIpUtils::checkIp($this->getIpAddress(), $ipAddresses);
+        $ipAddress = $this->getIpAddress();
+
+        if ($ipAddress === null) {
+            return false;
+        }
+
+        return SymphonIpUtils::checkIp($ipAddress, $ipAddresses);
     }
 
     public function makeBlockResponse(): Response|RedirectResponse
@@ -141,10 +144,6 @@ trait Middleware
         return (new Responder())->respond($responseConfig);
     }
 
-    /**
-     * @param Request $request
-     * @return array
-     */
     public function blockAttackAttemps(): string
     {
         if ($this->strategy() === 'allow' || !$this->blockAttacks()) {
@@ -159,16 +158,18 @@ trait Middleware
             fn() => 'allow',
         );
 
-        if ($response !== 'allow') {
-            $this->addIpAddressToBlockList($this->getIpAddress());
+        if ($response !== 'allow' && ($ipAddress = $this->getIpAddress()) !== null) {
+            $this->addIpAddressToBlockList($ipAddress);
         }
 
         return $response === 'allow' ? 'allow' : 'block';
     }
 
-    public function addIpAddressToBlockList($ipAddress)
+    public function addIpAddressToBlockList(string $ipAddress): void
     {
-        $domain = $this->getCurrent();
+        if (($domain = $this->getCurrent()) === null) {
+            return;
+        }
 
         $ipAddresses = explode("\n", $domain->block);
 

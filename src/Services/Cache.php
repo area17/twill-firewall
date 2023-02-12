@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Cache as IlluminateCache;
 
 trait Cache
 {
-    protected $CACHE_ALL_KEYS = 'twill-firewall.all-keys'; // constant
+    protected string $CACHE_ALL_KEYS = 'twill-firewall.all-keys'; // constant
 
-    public function cacheGet($key, $default = null): mixed
+    public function cacheGet(string $key, mixed $default = null): mixed
     {
         return IlluminateCache::get($this->makeCacheKey($key), $default);
     }
 
-    public function cachePut($key, $value): void
+    public function cachePut(string $key, mixed $value): void
     {
         $key = $this->makeCacheKey($key);
 
@@ -24,9 +24,9 @@ trait Cache
         $this->cacheCurrentKey($key);
     }
 
-    public function makeCacheKey($key): string
+    public function makeCacheKey(string $key): string
     {
-        return sprintf('twill-firewall.%s.%s', Str::slug($this->getDomain()), Str::slug($key));
+        return sprintf('twill-firewall.%s.%s', Str::slug($this->getDomain() ?? 'no-domain'), Str::slug($key));
     }
 
     public function cacheExpiration(): int
@@ -38,6 +38,7 @@ trait Cache
     {
         $keys = IlluminateCache::get($this->CACHE_ALL_KEYS, []);
 
+        /* @phpstan-ignore-next-line */
         foreach ($keys as $key) {
             IlluminateCache::forget($key);
         }

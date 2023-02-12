@@ -12,6 +12,17 @@ use A17\TwillFirewall\Support\Facades\TwillFirewall as TwillFirewallFacade;
 
 /**
  * @property string|null $domain
+ * @property bool $published
+ * @property string $domain
+ * @property string $allow
+ * @property string $block
+ * @property string $redirect_to
+ * @property bool $allow_laravel_login
+ * @property bool $allow_twill_login
+ * @property string $strategy
+ * @property bool $block_attacks
+ * @property bool $add_blocked_to_list
+ * @property int $max_requests_per_minute
  */
 class TwillFirewall extends Model
 {

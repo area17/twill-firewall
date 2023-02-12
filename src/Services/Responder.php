@@ -7,14 +7,7 @@ use Illuminate\Support\Facades\Response;
 
 class Responder
 {
-    /**
-     * Properly respond.
-     *
-     * @var \Illuminate\Support\Collection
-     *
-     * @return mixed
-     */
-    public function respond($data = [])
+    public function respond(array $data = []): mixed
     {
         if ($data['code'] === 200) {
             return;
