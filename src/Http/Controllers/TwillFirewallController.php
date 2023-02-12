@@ -35,6 +35,11 @@ class TwillFirewallController extends ModuleController
             'field' => 'status',
         ],
 
+        'strategy' => [
+            'title' => 'Strategy',
+            'field' => 'strategy',
+        ],
+
         'allow_laravel_login' => [
             'title' => 'Laravel login',
             'field' => 'allow_laravel_login',
