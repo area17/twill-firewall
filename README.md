@@ -10,6 +10,14 @@ This Twill Capsule is intended to enable developers to configure an application 
 
 You add as many domains as you need and configure different passwords for each. Once you enable the `all domains (*)` entry, the same configuration will be used for all, and all other domains will be hidden.
 
+## Features
+
+- "Allow" strategy: only allow access to the listed IP addresses 
+- "Block" strategy: block all listed IP addresses
+- Detects and blocks automatically attacks
+- Automatically add block attacker IP addresses to the block list
+- Redirection instead of blocking. Allow displaying a "Coming soon" page to external users, while giving access to the team. 
+
 ## Middleware
 
 A middleware is automatically added to all `web` routes, but you can configure this behaviour or even disable it to configure your middleware yourself:  
@@ -58,15 +66,10 @@ public function register()
 
 #### .env 
 
-The configuration works both on `.env` or in the CMS settings. If you set them on `.env` the CMS settings will be disabled and overloded by `.env`. 
+Enable it on your `.env` file: 
 
 ```dotenv
 TWILL_FIREWALL_ENABLED=true
-TWILL_FIREWALL_USERNAME=frontend
-TWILL_FIREWALL_PASSWORD=secret
-TWILL_FIREWALL_RATE_LIMITING_ATTEMPTS=5
-TWILL_FIREWALL_TWILL_DATABASE_LOGIN_ENABLED=true
-TWILL_FIREWALL_LARAVEL_DATABASE_LOGIN_ENABLED=true
 ```
 
 ## Contribute
