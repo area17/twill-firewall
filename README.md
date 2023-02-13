@@ -36,6 +36,12 @@ A middleware is automatically added to all `web` routes, but you can configure t
 
 If you have authorization on your app (as you have on Twill), you can exempt logged in users from the rate limit, so they don't risk getting blocked.
 
+## Detecting attacks
+
+If enabled it will rate limit requests (per minute) by the IP address. After a minute is passed the offending client can get back to do more requests. Enabling "Automatically add blocked IP addresses to block list" makes a block permanent, it adds the "attacker" IP address to the block list.
+
+Make sure you set a too low rate, so you don't risk blocking Gooble Bot and other search engine crawlers out there. 
+
 ## Installing
 
 ### Require the Composer package:
