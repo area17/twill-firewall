@@ -8,7 +8,7 @@ This Twill Capsule is intended to enable developers to configure an application 
 
 ## Domains
 
-You add as many domains as you need and configure different passwords for each. Once you enable the `all domains (*)` entry, the same configuration will be used for all, and all other domains will be hidden.
+You add as many domains as you need and configure different strategies for each. Once you enable the `all domains (*)` entry, the same configuration will be used for all, and all other domains will be hidden.
 
 ## Features
 
@@ -34,7 +34,7 @@ A middleware is automatically added to all `web` routes, but you can configure t
 
 ## Using authentication
 
-If you don't want to share a single username and password with everyone that will access your pages, you can configure the package to allow existing users, both on Twill (CMS) and/or Laravel (frontend), to use their own passwords to pass Basic Auth.
+If you have authorization on your app (as you have on Twill), you can exempt logged in users from the rate limit, so they don't risk getting blocked.
 
 ## Installing
 
