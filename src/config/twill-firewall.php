@@ -61,8 +61,9 @@ return [
 
     'attacks' => [
         'block' => env('TWILL_BLOCK_ATTACKS_ENABLED', false),
-        'add_blocked_to_list' => env('TWILL_ADD_BLOCKED_TO_BLOCK_LIST', false),
-        'max-per-minute' => env('TWILL_BLOCK_ATTACKS_RATE_PER_MIUTE', 30),
+        'add-blocked-to-list' => env('TWILL_ADD_BLOCKED_TO_BLOCK_LIST', false),
+        'max-per-minute' => env('TWILL_BLOCK_ATTACKS_RATE_PER_MINUTE', 30),
+        'max-automatic-ip-addresses' => env('TWILL_BLOCK_ATTACKS_MAX_IPS', 1000),
     ],
 
     'responses' => [

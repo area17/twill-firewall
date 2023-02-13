@@ -10,7 +10,7 @@ class Responder
     public function respond(array $data = []): mixed
     {
         if ($data['code'] === 200) {
-            return;
+            return null;
         }
 
         if ($data['should_abort']) {

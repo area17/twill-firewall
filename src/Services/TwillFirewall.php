@@ -80,12 +80,17 @@ class TwillFirewall
 
     public function addBlockedToBlockList(bool $force = false): string|null
     {
-        return $this->get('attacks.add_blocked_to_list', 'add_blocked_to_list', $force);
+        return $this->get('attacks.add-blocked-to-list', 'add_blocked_to_list', $force);
     }
 
     public function published(bool $force = false): string|null
     {
         return $this->get('enabled', 'published', $force);
+    }
+
+    public function maxRequestsPerMinute(bool $force = false): string|null
+    {
+        return $this->get('attacks.max_requests_per_minute', 'max_requests_per_minute', $force);
     }
 
     public function get(string $configKey, string $databaseColumn, bool $force = false): string|null

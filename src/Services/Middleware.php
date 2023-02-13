@@ -152,11 +152,7 @@ trait Middleware
 
         $rateLimitingKey = $this->rateLimitingKey();
 
-        $response = RateLimiter::attempt(
-            $rateLimitingKey,
-            $this->config('attacks.max-per-minute', 30),
-            fn() => 'allow',
-        );
+        $response = RateLimiter::attempt($rateLimitingKey, $this->maxRequestsPerMinute(), fn() => 'allow');
 
         if ($response !== 'allow' && ($ipAddress = $this->getIpAddress()) !== null) {
             $this->addIpAddressToBlockList($ipAddress);
@@ -175,7 +171,14 @@ trait Middleware
 
         $ipAddresses[] = $ipAddress;
 
-        $domain->block = implode("\n", $ipAddresses);
+        if (count($ipAddresses) > dd($this->config('attacks.max-blocked-ip-addresses', 500))) {
+            return;
+        }
+
+        $domain->block = collect($ipAddresses)
+            ->unique()
+            ->filter()
+            ->implode("\n");
 
         $domain->save();
     }

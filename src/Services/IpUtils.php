@@ -10,7 +10,7 @@ trait IpUtils
 
     public function getIpAddress(): string|null
     {
-        if ($this->ipAddress !== null) {
+        if ($this->ipAddress !== null && filled($this->ipAddress)) {
             return $this->ipAddress;
         }
 
@@ -20,13 +20,13 @@ trait IpUtils
             $this->ipAddress = $this->removePortFromIPv4($this->ipAddress);
         }
 
-        if ($this->ipAddress !== null) {
+        if ($this->ipAddress !== null && filled($this->ipAddress)) {
             return $this->ipAddress;
         }
 
         $this->ipAddress = request()->ip();
 
-        if ($this->ipAddress !== null) {
+        if ($this->ipAddress !== null && filled($this->ipAddress)) {
             return $this->ipAddress;
         }
 
