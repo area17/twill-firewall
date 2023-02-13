@@ -171,7 +171,7 @@ trait Middleware
 
         $ipAddresses[] = $ipAddress;
 
-        if (count($ipAddresses) > dd($this->config('attacks.max-blocked-ip-addresses', 500))) {
+        if (count($ipAddresses) > $this->config('attacks.max-blocked-ip-addresses', 500)) {
             return;
         }
 
