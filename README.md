@@ -42,6 +42,10 @@ If enabled it will rate limit requests (per minute) by the IP address. After a m
 
 Make sure you set a too low rate, so you don't risk blocking Gooble Bot and other search engine crawlers out there. 
 
+## Request time overhead and middleware
+
+On our benchmarks we detected around 10ms over extra overhead on each request, adding the middleware to the end of the list. If you don't need authentication, you can set the `middleware.method` to `prepend`, it will execute before all other middleware and block requests as soon as possible. You can also disable automatic middleware injection and configure it yourself.   
+
 ## Installing
 
 ### Require the Composer package:
