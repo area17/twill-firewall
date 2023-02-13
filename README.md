@@ -44,7 +44,7 @@ Make sure you set a too low rate, so you don't risk blocking Gooble Bot and othe
 
 ## Request time overhead and middleware
 
-On our benchmarks we detected around 10ms over extra overhead on each request, adding the middleware to the end of the list. If you don't need authentication, you can set the `middleware.method` to `prepend`, it will execute before all other middleware and block requests as soon as possible. You can also disable automatic middleware injection and configure it yourself.   
+On our benchmarks (using [ApacheBench](https://httpd.apache.org/docs/2.4/programs/ab.html) to perform 500 requests with 10 concurrent clients) we detected the firewall adds around 4ms extra time on each request, adding the middleware to the end of the list. If you don't need authentication, you can set the `middleware.method` to `prepend`, it will execute before all other middleware and block requests as soon as possible. You can also disable automatic middleware injection and configure it yourself.
 
 ## Installing
 
