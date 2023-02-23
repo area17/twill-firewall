@@ -31,5 +31,8 @@ jobs:
       - name: Run composer install
         run: composer install -n --prefer-dist
 
+      - name: Install Dusk (currently missing from Twill 3)
+        run: composer require laravel/dusk --dev
+
       - name: Run phpstan
         run: ./vendor/bin/phpstan analyse
