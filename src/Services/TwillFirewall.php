@@ -88,9 +88,15 @@ class TwillFirewall
         return $this->get('enabled', 'published', $force);
     }
 
-    public function maxRequestsPerMinute(bool $force = false): string|null
+    public function maxRequestsPerMinute(bool $force = false): int
     {
-        return $this->get('attacks.max_requests_per_minute', 'max_requests_per_minute', $force);
+        $max = $this->get('attacks.max_requests_per_minute', 'max_requests_per_minute', $force);
+
+        if (empty($max)) {
+            return 30; // default
+        }
+
+        return (int) $max;
     }
 
     public function get(string $configKey, string $databaseColumn, bool $force = false): string|null
