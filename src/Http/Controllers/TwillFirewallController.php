@@ -16,7 +16,7 @@ use A17\TwillFirewall\Support\Facades\TwillFirewall as TwillFirewallFacade;
 
 class TwillFirewallController extends ModuleController
 {
-    protected $moduleName = 'twillFirewall';
+    protected $moduleName = 'twillFirewalls';
 
     protected $titleColumnKey = 'domain_string';
 
@@ -71,7 +71,7 @@ class TwillFirewallController extends ModuleController
 
     protected function getViewPrefix(): string|null
     {
-        return 'twill-firewall::admin';
+        return 'twill-firewall::twill';
     }
 
     public function setIndexOptions(): void
