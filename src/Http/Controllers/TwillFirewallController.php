@@ -56,11 +56,7 @@ class TwillFirewallController extends ModuleController
         ],
     ];
 
-    /**
-     * @param int|null $parentModuleId
-     * @return array|\Illuminate\View\View|RedirectResponse
-     */
-    public function index($parentModuleId = null)
+    public function index(?int $parentModuleId = null): mixed
     {
         app(TwillFirewallRepository::class)->generateDomains();
 
