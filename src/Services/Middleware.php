@@ -163,6 +163,10 @@ trait Middleware
 
     public function addIpAddressToBlockList(string $ipAddress): void
     {
+        if (!$this->addBlockedToBlockList()) {
+            return;
+        }
+
         if (($domain = $this->getCurrent()) === null) {
             return;
         }
