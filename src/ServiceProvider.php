@@ -17,6 +17,9 @@ class ServiceProvider extends TwillPackageServiceProvider
 
     public function boot(): void
     {
+        $this->registerThisCapsule();
+
+        
         if (!$this->registerConfig()) {
             return;
         }
@@ -24,8 +27,6 @@ class ServiceProvider extends TwillPackageServiceProvider
         $this->registerViews();
 
         $this->configureMiddeleware();
-
-        $this->registerThisCapsule();
 
         parent::boot();
     }
