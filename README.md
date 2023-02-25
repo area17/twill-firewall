@@ -54,11 +54,17 @@ On our benchmarks (using [ApacheBench](https://httpd.apache.org/docs/2.4/program
 composer require area17/twill-firewall
 ```
 
-### Publish the configuration
+### Configuration
+
+#### Publishing the main config file
 
 ``` bash
 php artisan vendor:publish --provider="A17\TwillFirewall\ServiceProvider"
 ```
+
+#### Sections
+
+To improve DX when adding new features to this package, we split [the config file in several sections](/src/config).  
 
 ### Load Capsule helpers by adding calling the loader to your AppServiceProvider:
 
