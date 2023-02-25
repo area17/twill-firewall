@@ -66,6 +66,36 @@ php artisan vendor:publish --provider="A17\TwillFirewall\ServiceProvider"
 
 To improve DX when adding new features to this package, we split [the config file in several sections](/src/config).  
 
+You can list sections available to be merged into the published config file using this command:
+
+```bash
+php artisan twill-firewall:config:list-sections
+```
+
+Which should give you an output like:
+
+```
++----------------+--------------------------------------------------------+
+| Section        | Merge command                                          |
++----------------+--------------------------------------------------------+
+| attacks        | php artisan twill-firewall:config:merge attacks        |
+| cache          | php artisan twill-firewall:config:merge cache          |
+| database-login | php artisan twill-firewall:config:merge database-login |
+| inputs         | php artisan twill-firewall:config:merge inputs         |
+| keys           | php artisan twill-firewall:config:merge keys           |
+| middleware     | php artisan twill-firewall:config:merge middleware     |
+| package        | php artisan twill-firewall:config:merge package        |
+| responses      | php artisan twill-firewall:config:merge responses      |
+| routes         | php artisan twill-firewall:config:merge routes         |
++----------------+--------------------------------------------------------+
+```
+
+And you can merge a section using this command: 
+
+```
+php artisan twill-firewall:config:merge <section-name>
+```
+
 ### Load Capsule helpers by adding calling the loader to your AppServiceProvider:
 
 ``` php

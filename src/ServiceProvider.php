@@ -9,15 +9,17 @@ use A17\TwillFirewall\Http\Middleware;
 use A17\TwillFirewall\Services\Helpers;
 use A17\Twill\TwillPackageServiceProvider;
 use A17\TwillFirewall\Services\TwillFirewall;
+use A17\TwillFirewall\Console\Commands\ConfigMergeSection;
+use A17\TwillFirewall\Console\Commands\ConfigListSections;
 
 class ServiceProvider extends TwillPackageServiceProvider
 {
     /** @var bool $autoRegisterCapsules */
     protected $autoRegisterCapsules = false;
 
-    protected $packageName = 'twill-firewall';
+    protected string $packageName = 'twill-firewall';
 
-    protected $configSections = [
+    protected array $configSections = [
         'attacks',
         'cache',
         'database-login',
@@ -26,19 +28,37 @@ class ServiceProvider extends TwillPackageServiceProvider
         'middleware',
         'responses',
         'routes',
+        'package',
     ];
 
-    public function boot(): void
+    protected bool $enabled = false;
+
+    protected string|null $mainConfigPath = null;
+
+    public function register(): void
     {
-        if (!$this->registerConfig()) {
+        $this->registerConfig();
+
+        if (!$this->enabled) {
             return;
         }
 
-        $this->registerViews();
-
-        $this->configureMiddeleware();
-
         $this->registerThisCapsule();
+    }
+
+    public function boot(): void
+    {
+        if (!$this->enabled) {
+            return;
+        }
+
+        $this->bootConfig();
+
+        $this->bootMiddeleware();
+
+        $this->bootViews();
+
+        $this->bootCommands();
 
         parent::boot();
     }
@@ -56,31 +76,21 @@ class ServiceProvider extends TwillPackageServiceProvider
         app()->singleton(TwillFirewall::class, fn() => new TwillFirewall());
     }
 
-    public function registerViews(): void
+    public function bootViews(): void
     {
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'twillFirewalls');
     }
 
-    public function registerConfig(): bool
+    public function registerConfig(): void
     {
-        $path = __DIR__ . "/config/{$this->packageName}.php";
+        $this->registerMainConfig();
 
-        $this->mergeConfigFrom($path, $this->packageName);
+        $this->registerConfigSections();
 
-        foreach ($this->configSections as $section) {
-            $path = __DIR__ . "/config/{$section}.php";
-
-            $this->mergeConfigFrom($path, "{$this->packageName}.{$section}");
-        }
-
-        $this->publishes([
-            $path => config_path("{$this->packageName}.php"),
-        ]);
-
-        return config('twill-firewall.enabled');
+        $this->enabled = config('twill-firewall.enabled');
     }
 
-    public function configureMiddeleware(): void
+    public function bootMiddeleware(): void
     {
         if (config('twill-firewall.middleware.automatic')) {
             /**
@@ -97,5 +107,45 @@ class ServiceProvider extends TwillPackageServiceProvider
                 $kernel->$method($group, config('twill-firewall.middleware.class'));
             }
         }
+    }
+
+    public function bootCommands(): void
+    {
+        if (!$this->app->runningInConsole()) {
+            return;
+        }
+
+        $this->commands([
+            ConfigMergeSection::class,
+            ConfigListSections::class,
+        ]);
+    }
+
+    public function bootConfig(): void
+    {
+        $this->publishes([
+            $this->mainConfigPath => config_path("{$this->packageName}.php"),
+        ]);
+    }
+
+    public function registerMainConfig(): void
+    {
+        $this->mainConfigPath = __DIR__ . "/config/{$this->packageName}.php";
+
+        $this->mergeConfigFrom($this->mainConfigPath, $this->packageName);
+    }
+
+    public function registerConfigSections(): void
+    {
+        foreach ($this->configSections as $section) {
+            $this->mergeConfigFrom(
+                __DIR__ . "/config/{$section}.php",
+                "{$this->packageName}.{$section}"
+            );
+        }
+
+        config(['twill-firewall.package.name' => $this->packageName]);
+
+        config(['twill-firewall.package.sections' => $this->configSections]);
     }
 }
