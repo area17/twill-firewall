@@ -1,7 +1,7 @@
 @extends('twill::layouts.form', ['contentFieldsetLabel' => 'Configuration'])
 
 @php
-    $firewall = A17\TwillFirewall\Support\Facades\TwillFirewall::class;
+    $firewall = 'A17\TwillFirewall\Support\Facades\TwillFirewall';
 @endphp
 
 @section('contentFields')

@@ -59,7 +59,7 @@ class TwillFirewallController extends ModuleController
 
     protected function getViewPrefix(): string|null
     {
-        return 'twill-firewall::twill';
+        return 'twillFirewalls::twill';
     }
 
     public function setIndexOptions(): void
