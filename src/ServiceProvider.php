@@ -5,15 +5,28 @@ namespace A17\TwillFirewall;
 use Illuminate\Support\Str;
 use A17\Twill\Facades\TwillCapsules;
 use Illuminate\Contracts\Http\Kernel;
-use A17\Twill\TwillPackageServiceProvider;
 use A17\TwillFirewall\Http\Middleware;
 use A17\TwillFirewall\Services\Helpers;
+use A17\Twill\TwillPackageServiceProvider;
 use A17\TwillFirewall\Services\TwillFirewall;
 
 class ServiceProvider extends TwillPackageServiceProvider
 {
     /** @var bool $autoRegisterCapsules */
     protected $autoRegisterCapsules = false;
+
+    protected $packageName = 'twill-firewall';
+
+    protected $configSections = [
+        'attacks',
+        'cache',
+        'database-login',
+        'inputs',
+        'keys',
+        'middleware',
+        'responses',
+        'routes',
+    ];
 
     public function boot(): void
     {
@@ -50,14 +63,18 @@ class ServiceProvider extends TwillPackageServiceProvider
 
     public function registerConfig(): bool
     {
-        $package = 'twill-firewall';
+        $path = __DIR__ . "/config/{$this->packageName}.php";
 
-        $path = __DIR__ . "/config/{$package}.php";
+        $this->mergeConfigFrom($path, $this->packageName);
 
-        $this->mergeConfigFrom($path, $package);
+        foreach ($this->configSections as $section) {
+            $path = __DIR__ . "/config/{$section}.php";
+
+            $this->mergeConfigFrom($path, "{$this->packageName}.{$section}");
+        }
 
         $this->publishes([
-            $path => config_path("{$package}.php"),
+            $path => config_path("{$this->packageName}.php"),
         ]);
 
         return config('twill-firewall.enabled');
