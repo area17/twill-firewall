@@ -45,7 +45,7 @@ class ServiceProvider extends TwillPackageServiceProvider
 
     public function registerViews(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/resources/views', 'twill-firewall');
+        $this->loadViewsFrom(__DIR__ . '/resources/views', 'twillFirewalls');
     }
 
     public function registerConfig(): bool
