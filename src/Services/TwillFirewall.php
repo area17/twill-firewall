@@ -220,4 +220,9 @@ class TwillFirewall
     {
         return $this->strategy(true) === 'allow';
     }
+
+    public function packageName(): string
+    {
+        return $this->config('package.name');
+    }
 }
