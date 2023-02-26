@@ -2,12 +2,11 @@
 
 namespace A17\TwillFirewall\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use A17\Twill\Http\Controllers\Admin\ModuleController;
 use A17\TwillFirewall\Repositories\TwillFirewallRepository;
 use A17\TwillFirewall\Support\Facades\TwillFirewall as TwillFirewallFacade;
+use Illuminate\Contracts\View\View as IlluminateView;
+use Illuminate\Http\JsonResponse;
 
 class TwillFirewallController extends ModuleController
 {
@@ -51,7 +50,11 @@ class TwillFirewallController extends ModuleController
         ],
     ];
 
-    public function index(int|null $parentModuleId = null): array|View|RedirectResponse|JsonResponse
+    /**
+     * @param int|null $parentModuleId
+     * @return array|\Illuminate\View\View
+     */
+    public function index($parentModuleId = null)
     {
         app(TwillFirewallRepository::class)->generateDomains();
 
