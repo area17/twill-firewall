@@ -11,12 +11,6 @@ parameters:
 
     universalObjectCratesClasses:
 
-    ignoreErrors:
-
     reportUnmatchedIgnoredErrors: false
 
     checkGenericClassInNonGenericObjectType: false
-
-    excludePaths:
-      analyseAndScan:
-        - src/Models/Behaviors/Encrypt.php

@@ -27,7 +27,7 @@ class ConfigMergeSection extends Command
      *
      * @var string
      */
-    protected string|null $sectionFile = null;
+    protected string $sectionFile = '';
 
     /**
      * Execute the console command.
@@ -36,7 +36,7 @@ class ConfigMergeSection extends Command
      */
     public function handle()
     {
-        $this->info("Merging section {$this->argument('section')} into the published config file...");
+        $this->info("Merging section {$this->getSection()} into the published config file...");
 
         try {
             $this->checkSectionFileExists();
@@ -57,13 +57,16 @@ class ConfigMergeSection extends Command
 
     public function checkSectionFileExists(): void
     {
-        $section = $this->argument('section');
+        $section = $this->getSection();
 
-        $this->sectionFile = realpath(TwillFirewall::config('package.path')."/config/{$section}.php");
+        $file = realpath(TwillFirewall::config('package.path')."/config/{$section}.php");
 
-        if ($this->sectionFile === false) {
-            $this->throw($message = "The section file '{$this->sectionFile}' does not exist.");
+        if (is_string($file)) {
+            $this->sectionFile = $file;
+
         }
+
+        $this->throw($message = "The section file '{$this->sectionFile}' does not exist.");
     }
 
     public function checkPublishedConfigFileExists(): void
@@ -75,6 +78,9 @@ class ConfigMergeSection extends Command
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     public function throw(string $message): void
     {
         $this->error($message);
@@ -84,7 +90,7 @@ class ConfigMergeSection extends Command
 
     public function checkSectionIsMissinfFromConfig(): void
     {
-        $section = $this->argument('section');
+        $section = $this->getSection();
 
         $publishedConfigFile = config_path(TwillFirewall::packageName().'.php');
 
@@ -99,9 +105,15 @@ class ConfigMergeSection extends Command
     {
         $file = config_path(TwillFirewall::packageName().'.php');
 
-        $section = $this->argument('section');
+        $section = $this->getSection();
 
         $publishedConfigContents = file_get_contents($file);
+
+        if ($publishedConfigContents === false) {
+            $this->throw("Could not read the published config file '{$file}'.");
+
+            return;
+        }
 
         $publishedConfig = require $file;
 
@@ -130,7 +142,7 @@ class ConfigMergeSection extends Command
         }
 
         foreach ($publishedConfig as $key => $value) {
-            if (!$updated[$key] ?? null !== $value) {
+            if (($updated[$key] ?? null) !== $value) {
                 $this->throw("It was not possible to update the config file correctly.");
             }
         }
@@ -140,8 +152,14 @@ class ConfigMergeSection extends Command
         unlink($updatedFile);
     }
 
-    public function extractArray(string $content): string
+    public function extractArray(string|false|null $content): string|null
     {
+        if ($content === false || $content === null || empty($content)) {
+            $this->throw("The section file is empty.");
+
+            return null;
+        }
+
         $lines = explode("\n", $content);
 
         foreach ($lines as $key => $line) {
@@ -161,5 +179,16 @@ class ConfigMergeSection extends Command
         $content = trim($content);
 
         return trim(implode("\n", $lines));
+    }
+
+    public function getSection(): string
+    {
+        $section = $this->argument('section');
+
+        if (is_string($section)) {
+            return $section;
+        }
+
+        return '';
     }
 }

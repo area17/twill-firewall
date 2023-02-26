@@ -5,13 +5,14 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">=8.0",
-    "area17/twill": "^3.0"
+    "area17/twill": "^2.12"
   },
   "require-dev": {
       "nunomaduro/larastan": "^2.0",
       "phpstan/phpstan": "^1.8",
       "orchestra/testbench": "^7.11",
-      "friendsofphp/php-cs-fixer": "^3.14"
+      "friendsofphp/php-cs-fixer": "^3.14",
+      "laravel/dusk": "^7.7"
   },
   "autoload": {
     "psr-4": {
