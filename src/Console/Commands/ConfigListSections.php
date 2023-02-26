@@ -5,6 +5,7 @@ namespace A17\TwillFirewall\Console\Commands;
 use Illuminate\Console\Command;
 use A17\TwillFirewall\Exceptions\PackageException;
 use A17\TwillFirewall\Support\Facades\TwillFirewall;
+use Illuminate\Support\Collection;
 
 class ConfigListSections extends Command
 {
@@ -31,7 +32,12 @@ class ConfigListSections extends Command
     {
         $this->table(
             ['Section', 'Merge command'],
-            collect(TwillFirewall::config('package.sections'))->sort()->map(fn($value) => [$value, "php artisan twill-firewall:config:merge {$value}"])->toArray()
+            (new Collection(TwillFirewall::config('package.sections')))
+                ->sort()
+                ->map(fn($value) => [$value, "php artisan twill-firewall:config:merge {$value}"])
+                ->toArray(),
         );
+
+        return Command::SUCCESS;
     }
 }
